@@ -1,11 +1,17 @@
 public with sharing class CsvGenerator {
 
     @TestVisible
+    private static final String FIELD_PATH_DELIMITER = '\\.';
+    @TestVisible
     private static final String COLUMN_DELIMITER = ',';
     @TestVisible
     private static final String ROW_DELIMITER = '\n';
     @TestVisible
-    private static final String FIELD_PATH_DELIMITER = '\\.';
+    private static final String DOUBLE_QUOTE = '"';
+    @TestVisible
+    private static final String WRAPPER_PREFIX = '"';
+    @TestVisible
+    private static final String WRAPPER_SUFFIX = '"';
 
     private String fileName { get; set; }
     private Map<String, String> columns;
@@ -73,7 +79,7 @@ public with sharing class CsvGenerator {
     }
 
     private String getHeader() {
-        return String.join(this.columns.values(), COLUMN_DELIMITER);
+        return String.join(this.wrapColumns(this.columns.values()), COLUMN_DELIMITER);
     }
 
     private String getRow(Object record) {
@@ -82,7 +88,27 @@ public with sharing class CsvGenerator {
             String column = String.valueOf(this.getValueFromObjectByPath(record, fieldPath.split(FIELD_PATH_DELIMITER)));
             columns.add(String.isNotEmpty(column) ? column : '');
         }
-        return String.join(columns, COLUMN_DELIMITER);
+        return String.join(this.wrapColumns(columns), COLUMN_DELIMITER);
+    }
+
+    private List<String> wrapColumns(List<String> columnsToWrap) {
+        List<String> wrappedColumns = new List<String>();
+        for (String column: columnsToWrap) {
+            wrappedColumns.add(this.getWrappedColumn(column));
+        }
+        return wrappedColumns;
+    }
+
+    private String getWrappedColumn(String column) {
+        return this.wrapText(this.encloseSymbolInText(column, DOUBLE_QUOTE));
+    }
+
+    private String encloseSymbolInText(String text, String symbol) {
+        return text.replaceAll(symbol, WRAPPER_PREFIX + symbol + WRAPPER_SUFFIX);
+    }
+
+    private String wrapText(String text) {
+        return WRAPPER_PREFIX + text + WRAPPER_SUFFIX;
     }
 
     private Object getValueFromObjectByPath(Object obj, List<String> path) {

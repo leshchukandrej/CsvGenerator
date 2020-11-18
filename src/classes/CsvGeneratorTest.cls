@@ -32,7 +32,7 @@ public with sharing class CsvGeneratorTest {
         };
 
         System.assertEquals(csvGeneratorInst.getColumnApiNames(), OBJECT_PATHS);
-        System.assertEquals(String.join(expectedRows, CsvGenerator.ROW_DELIMITER), data);
+        System.assertEquals(String.join(expectedRows, CsvGenerator.ROW_DELIMITER), data.remove('"'));
     }
 
     @IsTest static void genCsvFromSObjects() {
@@ -59,7 +59,7 @@ public with sharing class CsvGeneratorTest {
         };
 
         System.assertEquals(csvGeneratorInst.getColumnApiNames(), new List<String>(RECORD_PATHS.keySet()));
-        System.assertEquals(String.join(expectedRows, CsvGenerator.ROW_DELIMITER), data);
+        System.assertEquals(String.join(expectedRows, CsvGenerator.ROW_DELIMITER), data.remove('"'));
     }
 
     @IsTest static void setColumnsFromSObjectFields() {
