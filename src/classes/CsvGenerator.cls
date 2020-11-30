@@ -104,7 +104,7 @@ public with sharing class CsvGenerator {
     }
 
     private String encloseSymbolInText(String text, String symbol) {
-        return text.replaceAll(symbol, WRAPPER_PREFIX + symbol + WRAPPER_SUFFIX);
+        return text.replaceAll(symbol, this.wrapText(symbol));
     }
 
     private String wrapText(String text) {
